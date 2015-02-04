@@ -99,6 +99,7 @@ __main__viewer.py
 """
 import sys
 import os
+import random
 
 from tkinter import *
 from idlelib.Percolator import Percolator
@@ -539,6 +540,37 @@ class DemoWindow(object):
     def 語音合成之停止(我):
         ryGoogleTTS.quitIt()
 
+    def 打亂程式(我):
+    
+        tcSrc= 我.text2.get('sel.first', 'sel.last')
+        
+        sL= tcSrc.split('\n')
+        random.shuffle(sL)
+        
+        sT=''
+        for x in sL:
+            sT=sT+x+'\n'
+                
+        我.text2.insert('sel.last',sT)
+        我.text2.delete('sel.first', 'sel.last')
+        
+        我.text2.update()
+        
+    def 音文同步(我):
+    
+        if 'yinyang.py' not in 我.module.__file__:
+            msg= '非 yinyang.py, 暫無 音文同步！'
+            print(msg)
+            return msg
+        
+        from rySyncTTS import RySyncTTS
+        x= RySyncTTS(我.text2)
+        x.rySync()
+        x.ryQuit()
+
+        #print('not implemented !!')
+        return
+    
     def 新功能選單(我, master):
         
         menu= Menu(master)
@@ -554,7 +586,13 @@ class DemoWindow(object):
         menu.add_separator()
         menu.add_command(label= '語音合成(漢)', command= 我.語音合成)
         menu.add_command(label= '語音合成之停止', command= 我.語音合成之停止)
+        
+        menu.add_separator()
+        menu.add_command(label= '打亂程式(選到的部分)', command= 我.打亂程式)
 
+        menu.add_separator()
+        menu.add_command(label= '音文同步(tc_yinyang)', command= 我.音文同步)
+        
         return menu
 
     def makeFontMenu(我, master):

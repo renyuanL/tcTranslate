@@ -14,16 +14,16 @@ def main():
     playIt()
     '''
     
-    fp= io.StringIO(jp_yinyang)
+    fp= io.StringIO(tc_yinyang)
 
     tokenL= [ x for x in tn.generate_tokens(fp.readline) ]
 
-    ttsIt(tokenL, langAnother= 'ja')
+    ttsIt(tokenL, langAnother= 'zh-tw')
     
     playIt()
     
             
-def ttsIt(tokenL, savefile= '_gtts.mp3', langAnother= 'zh-tw'):
+def ttsIt00(tokenL, savefile= '_gtts.mp3', langAnother= 'zh-tw'):
     """ Do the Web request and save to `savefile` """
 
     GOOGLE_TTS_URL= 'http://translate.google.com/translate_tts'
@@ -60,6 +60,130 @@ def ttsIt(tokenL, savefile= '_gtts.mp3', langAnother= 'zh-tw'):
             raise
     f.close()
     print('ttsIt--> %s'%savefile)
+
+
+def ttsIt(tokenL, savefile= '_gtts.mp3', langAnother= 'zh-tw'):
+    """ Do the Web request and save to `savefile` """
+
+    GOOGLE_TTS_URL= 'http://translate.google.com/translate_tts'
+    #MAX_CHARS= 100 # Max characters the Google TTS API takes at a time
+    
+    textL= [t.string for t in tokenL if t.type == tn.NAME]
+
+    textlangL= []
+    for text in textL:
+        lang= 'en' if all([ord(x)<=0x7f for x in text]) else langAnother #'ja' #'zh-tw'
+        textlangL += [(text, lang)]
+    
+    f= open(savefile, 'wb')
+
+    for idx, textlang in enumerate(textlangL):
+
+        print(idx, textlang, end= ', ')
+        
+        text, lang= textlang
+        
+        payload = { 'ie': 'utf-8',
+                    'tl': lang,
+                    'q':  text,
+                    'total': len(textlangL),
+                    'idx':   idx,
+                    'textlen': len(text) }
+        try:
+            r= requests.get(GOOGLE_TTS_URL, params= payload)
+            #
+            byteNum= len(r.content)
+            print('byteNum= ', byteNum)
+            # 代表 byte 數，不知能否與時間長度成正比？
+            # 若可，音文同步就做出來了！
+            #
+            f.write(r.content) # 可能就可以，
+            #
+            # 但要預防 它 太大， 故用 iter_content(), 
+            # 設定 1024 bytes 為 1個 chunk
+            #
+            # 也可分成小檔儲存，但數量太多，檔案管理不易。
+            # 為了 debug 倒是小檔較方便。
+            #
+            '''
+            fn= '%s%04d.mp3'%(savefile.replace('.mp3',''),idx)
+            fp= open(fn,'wb')
+            
+            for chunk in r.iter_content(chunk_size=1024):
+                f.write(chunk)
+                fp.write(chunk)
+            
+            fp.close()
+            '''
+
+        except Exception as e:
+            raise
+    f.close()
+    print('ttsIt--> %s'%savefile)
+
+
+    
+tc_yinyang_timedText= '''
+>>> 
+0 ('from', 'en'), byteNum=  3312
+1 ('turtle_tc', 'en'), byteNum=  8640
+2 ('import', 'en'), byteNum=  3168
+3 ('def', 'en'), byteNum=  3024
+4 ('陰', 'zh-tw'), byteNum=  2880
+5 ('半徑', 'zh-tw'), byteNum=  3456
+6 ('顏色1', 'zh-tw'), byteNum=  5040
+7 ('顏色2', 'zh-tw'), byteNum=  3888
+8 ('筆寬', 'zh-tw'), byteNum=  3888
+9 ('顏色', 'zh-tw'), byteNum=  4176
+10 ('黑', 'zh-tw'), byteNum=  2736
+11 ('顏色1', 'zh-tw'), byteNum=  5040
+12 ('開始填', 'zh-tw'), byteNum=  4752
+13 ('畫圓', 'zh-tw'), byteNum=  4032
+14 ('半徑', 'zh-tw'), byteNum=  3456
+15 ('畫圓', 'zh-tw'), byteNum=  4032
+16 ('半徑', 'zh-tw'), byteNum=  3456
+17 ('左轉', 'zh-tw'), byteNum=  3744
+18 ('畫圓', 'zh-tw'), byteNum=  4032
+19 ('半徑', 'zh-tw'), byteNum=  3456
+20 ('結束填', 'zh-tw'), byteNum=  4896
+21 ('左轉', 'zh-tw'), byteNum=  3744
+22 ('提筆', 'zh-tw'), byteNum=  3456
+23 ('前進', 'zh-tw'), byteNum=  4320
+24 ('半徑', 'zh-tw'), byteNum=  3456
+25 ('右轉', 'zh-tw'), byteNum=  4032
+26 ('下筆', 'zh-tw'), byteNum=  3888
+27 ('顏色', 'zh-tw'), byteNum=  4176
+28 ('顏色1', 'zh-tw'), byteNum=  5040
+29 ('顏色2', 'zh-tw'), byteNum=  3888
+30 ('開始填', 'zh-tw'), byteNum=  4752
+31 ('畫圓', 'zh-tw'), byteNum=  4032
+32 ('半徑', 'zh-tw'), byteNum=  3456
+33 ('結束填', 'zh-tw'), byteNum=  4896
+34 ('左轉', 'zh-tw'), byteNum=  3744
+35 ('提筆', 'zh-tw'), byteNum=  3456
+36 ('後退', 'zh-tw'), byteNum=  3744
+37 ('半徑', 'zh-tw'), byteNum=  3456
+38 ('下筆', 'zh-tw'), byteNum=  3888
+39 ('左轉', 'zh-tw'), byteNum=  3744
+40 ('def', 'en'), byteNum=  3024
+41 ('主函數', 'zh-tw'), byteNum=  4752
+42 ('重設', 'zh-tw'), byteNum=  3888
+43 ('陰', 'zh-tw'), byteNum=  2880
+44 ('黑', 'zh-tw'), byteNum=  2736
+45 ('白', 'zh-tw'), byteNum=  2880
+46 ('陰', 'zh-tw'), byteNum=  2880
+47 ('白', 'zh-tw'), byteNum=  2880
+48 ('黑', 'zh-tw'), byteNum=  2736
+49 ('藏龜', 'zh-tw'), byteNum=  4320
+50 ('return', 'en'), byteNum=  3456
+51 ('if', 'en'), byteNum=  1728
+52 ('__name__', 'en'), byteNum=  13536
+53 ('主函數', 'zh-tw'), byteNum=  4752
+54 ('主迴圈', 'zh-tw'), byteNum=  4752
+ttsIt--> _gtts.mp3
+playIt: _gtts.mp3
+>>> 
+'''
 
 tc_yinyang= '''
 from turtle_tc import *
@@ -272,9 +396,12 @@ def unpauseIt():
     pygame.mixer.music.unpause()
 def rewindIt():
     pygame.mixer.music.rewind()    
+
 def quitIt():
     pygame.mixer.music.stop()
-    pygame.mixer.quit()
+    pygame.mixer.quit() 
+    # 上行必須執行，否則開啟的 mp3 檔沒有關閉，隨後就不能再寫進去。
+    # 但是...在哪裡呼叫它呢？再想想！
 
 
     

@@ -60,5 +60,5 @@ if __name__ == "__main__":
     主函數()
     主迴圈()
 
-# Above: "tc_peace.py", by Renyuan Lyu (呂仁園), 2015-01-31
+# Above: "tc_peace.py", by Renyuan Lyu (呂仁園), 2015-02-01
 # Original: "peace.py", by Gregor Lingl. 

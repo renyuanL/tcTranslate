@@ -161,5 +161,5 @@ if __name__ == '__main__':
     印(訊息)
     主迴圈()
 
-# Above: "tc_bytedesign.py", by Renyuan Lyu (呂仁園), 2015-01-31
+# Above: "tc_bytedesign.py", by Renyuan Lyu (呂仁園), 2015-02-01
 # Original: "bytedesign.py", by Gregor Lingl. 
